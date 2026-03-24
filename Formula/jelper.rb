@@ -3,7 +3,7 @@ class Jelper < Formula
   homepage "https://github.com/VladasZ/jelper"
   url "https://github.com/VladasZ/jelper/releases/download/vv0.0.1/jelper-macos"
   version "v0.0.1"
-  sha256 "346e90f1997189885bd0e2fe12fd0e3c6300e6d20dff95eeabda79ea50cf3e15"
+  sha256 "6eb61979bc59560e1d8880da98b60e3b9b978b1628fc40a0dfe7d1e881c8464c"
 
   def install
     bin.install "jelper-macos" => "jelper"
