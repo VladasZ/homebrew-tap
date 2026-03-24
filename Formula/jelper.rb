@@ -1,9 +1,9 @@
 class Jelper < Formula
   desc "Jira timesheet CLI — shows your worklogs grouped by week"
   homepage "https://github.com/VladasZ/jelper"
-  url "https://github.com/VladasZ/jelper/releases/download/vv0.0.1/jelper-macos"
-  version "v0.0.1"
-  sha256 "6eb61979bc59560e1d8880da98b60e3b9b978b1628fc40a0dfe7d1e881c8464c"
+  url "https://github.com/VladasZ/jelper/releases/download/v0.1.5/jelper-macos"
+  version "0.1.5"
+  sha256 "0fda12975dd4df29a79eca2db3448e3e30b4e3ada4772fd4616b507545abe0c3"
 
   def install
     bin.install "jelper-macos" => "jelper"
