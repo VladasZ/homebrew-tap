@@ -25,11 +25,16 @@ class Virglrenderer < Formula
     # Skip tests, GL error checks (noise on macOS CGL), and venus (needs
     # Vulkan + MoltenVK -- skipped here). UTM enables venus in their own
     # build; we stay minimal.
+    #
+    # render-server-worker=process avoids pulling server_sources into the
+    # main lib target; with worker=thread virglrenderer's meson.build
+    # compiles server/render_worker.c which #errors without the
+    # ENABLE_RENDER_SERVER_WORKER_THREAD define (only set when venus=true).
     system "meson", "setup", "build",
            "-Dtests=false",
            "-Dcheck-gl-errors=false",
            "-Dvenus=false",
-           "-Drender-server-worker=thread",
+           "-Drender-server-worker=process",
            *std_meson_args
     system "meson", "compile", "-C", "build"
     system "meson", "install", "-C", "build"
