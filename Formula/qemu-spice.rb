@@ -1,13 +1,18 @@
 class QemuSpice < Formula
-  desc "QEMU with SPICE server enabled (for virt clipboard/resize on macOS)"
-  homepage "https://www.qemu.org/"
-  url "https://download.qemu.org/qemu-10.2.2.tar.xz"
-  sha256 "784b296ff29c1417aa72323abcb2d2ea9ab9771724f577dcd785c3b04f21e176"
+  desc "QEMU (UTM fork) with SPICE + virgl enabled, for virt clipboard/resize/3D"
+  homepage "https://github.com/utmapp/qemu"
+  url "https://github.com/utmapp/qemu/releases/download/v10.0.2-utm/qemu-10.0.2-utm.tar.xz"
+  version "10.0.2-utm"
+  sha256 "f1d7357547a71ae3339a115d5c8f2b72e3b0089531d67c2aca43326d320ac6ca"
   license "GPL-2.0-only"
 
+  # Bump this when changing build flags without bumping the upstream version.
+  revision 1
+
   bottle do
-    root_url "https://github.com/VladasZ/homebrew-tap/releases/download/qemu-spice-10.2.2"
-    sha256 arm64_sequoia: "586fd364d7982b577cf2aeeeec374bbc8c9f36a4590c2509b46d8b58db7026b9"
+    root_url "https://github.com/VladasZ/homebrew-tap/releases/download/qemu-spice-10.0.2-utm"
+    # (new bottle will need to be produced for the rebuild; users can build
+    # from source in the meantime: brew install -s VladasZ/tap/qemu-spice)
   end
 
   # Keg-only so `brew install qemu` can coexist. `virt` resolves the path
@@ -27,6 +32,7 @@ class QemuSpice < Formula
   depends_on "glib"
   depends_on "gnutls"
   depends_on "jpeg-turbo"
+  depends_on "libepoxy"
   depends_on "libpng"
   depends_on "libslirp"
   depends_on "libssh"
@@ -37,6 +43,7 @@ class QemuSpice < Formula
   depends_on "snappy"
   depends_on "spice-server"
   depends_on "vde"
+  depends_on "virglrenderer"
   depends_on "zstd"
 
   uses_from_macos "bison" => :build
@@ -62,9 +69,11 @@ class QemuSpice < Formula
       --enable-curses
       --enable-fdt=system
       --enable-libssh
+      --enable-opengl
       --enable-slirp
       --enable-spice
       --enable-vde
+      --enable-virglrenderer
       --enable-virtfs
       --enable-zstd
       --extra-cflags=-DNCURSES_WIDECHAR=1
@@ -77,10 +86,13 @@ class QemuSpice < Formula
   end
 
   test do
-    assert_match version.to_s,
+    assert_match "QEMU emulator",
       shell_output("#{bin}/qemu-system-aarch64 --version")
     # Presence of SPICE in help output is what distinguishes this build.
     assert_match "spice",
       shell_output("#{bin}/qemu-system-aarch64 -spice help 2>&1")
+    # virtio-ramfb is the UTM-equivalent display device we built this for.
+    assert_match "virtio-ramfb",
+      shell_output("#{bin}/qemu-system-aarch64 -device help 2>&1")
   end
 end
