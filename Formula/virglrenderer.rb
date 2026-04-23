@@ -10,11 +10,21 @@ class Virglrenderer < Formula
   depends_on "meson" => :build
   depends_on "ninja" => :build
   depends_on "pkgconf" => :build
+  depends_on "python@3.14" => :build
 
   def install
-    # Skip tests, GL error checks (noise on macOS CGL), and venus (requires
-    # Vulkan + MoltenVK which we don't depend on here). UTM enables venus
-    # in their build; we stay minimal.
+    # virglrenderer vendors mesa's src/gallium/ which needs PyYAML at
+    # build time. PyYAML isn't a brew formula; install it into a build-
+    # local venv and prepend to PATH so meson's python probe picks it up.
+    venv = buildpath/"venv"
+    system "python3.14", "-m", "venv", venv
+    system venv/"bin/pip", "install", "--upgrade", "pip"
+    system venv/"bin/pip", "install", "pyyaml"
+    ENV.prepend_path "PATH", venv/"bin"
+
+    # Skip tests, GL error checks (noise on macOS CGL), and venus (needs
+    # Vulkan + MoltenVK -- skipped here). UTM enables venus in their own
+    # build; we stay minimal.
     system "meson", "setup", "build",
            "-Dtests=false",
            "-Dcheck-gl-errors=false",
